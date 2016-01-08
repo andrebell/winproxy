@@ -110,7 +110,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'winproxy=winproxy.cmd:cmd_winproxy',
+            'winproxy=winproxy.commandline:winproxy',
         ],
     },
 )
