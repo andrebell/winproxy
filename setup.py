@@ -14,30 +14,21 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='winproxy',
 
-    # Versions should comply with PEP440.  For a discussion on single-sourcing
-    # the version across setup.py and the project code, see
-    # https://packaging.python.org/en/latest/single_source_version.html
     version='0.1.0a0',
 
     description='A Proxy Selection Tool for Windows',
     long_description=long_description,
 
-    # The project's main homepage.
-    url='', # [TODO: 'https://github.com/pypa/sampleproject'],
+    # The project's main homepage. (Temporarily github)
+    url='https://github.com/andrebell/winproxy',
 
-    # Author details
     author='See AUTHORS file',
     author_email='winproxy@andre-bell.de',
 
-    # Choose your license
     license='BSD',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        # How mature is this project? Common values are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
         'Development Status :: 3 - Alpha',
 
         'Environment :: Console',
@@ -57,11 +48,8 @@ setup(
         'Topic :: System :: Systems Administration',
         'Topic :: Utilities',
 
-        # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: BSD License',
         
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
@@ -70,7 +58,6 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
 
-    # What does your project relate to?
     keywords='Windows, Internet Settings, Proxy',
 
     # You can just specify the packages manually here if your project is
@@ -96,7 +83,10 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        #'sample': ['package_data.dat'],
+        'winproxy': [
+            '__init__.ipynb',
+            'commandline.ipynb',
+        ],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
