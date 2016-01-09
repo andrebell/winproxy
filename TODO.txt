@@ -1,0 +1,9 @@
+TODO:
+=====
+- Implement
+  - add
+  - list
+  - del
+  - edit
+- Add Unittests
+- Add Documentation

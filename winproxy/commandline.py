@@ -8,55 +8,64 @@
 # In[ ]:
 
 import argparse
+from . import ProxySetting
 
 
 # In[ ]:
 
 def cmd_add(args):
     """The add command adds the current proxy settings to the database"""
-    print('add')
+    print('Adding to database is not yet implemented')
 
 
 # In[ ]:
 
 def cmd_del(args):
     """Remove a particular proxy setting from the database"""
-    print('del')
+    print('Removing from database is not yet implemented')
 
 
 # In[ ]:
 
 def cmd_edit(args):
     """Open the Windows proxy settings dialog"""
-    print('edit')
+    print('Opening the windows proxy settings dialog is not yet implemented')
 
 
 # In[ ]:
 
 def cmd_off(args):
     """Disable the proxy"""
-    print('off')
+    p = ProxySetting()
+    p.registry_read()
+    p.enable = False
+    p.registry_write()
 
 
 # In[ ]:
 
 def cmd_on(args):
     """Enable the proxy"""
-    print('on')
+    p = ProxySetting()
+    p.registry_read()
+    p.enable = True
+    p.registry_write()
 
 
 # In[ ]:
 
 def cmd_set(args):
     """Change the current proxy settings"""
-    print('set')
+    print('Changing the current settings is not yet implemented')
 
 
 # In[ ]:
 
 def cmd_view(args):
     """The view command displays the current proxy settings"""
-    print('view')
+    p = ProxySetting()
+    p.registry_read()
+    p.display(args.max_overrides)
 
 
 # In[ ]:
@@ -89,6 +98,7 @@ def winproxy():
     parser_set.set_defaults(func=cmd_set)
 
     parser_view = cmd_parsers.add_parser('view', help=cmd_view.__doc__)
+    parser_view.add_argument('--max-overrides', '-n', type=int, default=None, help='Limit the number of displayed proxy overrides')
     parser_view.set_defaults(func=cmd_view)
     
     args = parser.parse_args()
