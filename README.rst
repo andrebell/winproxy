@@ -18,6 +18,25 @@ The Command Line Tool
 
 [TODO: Description]
 
+To turn on the proxy call
+
+> winproxy on
+
+from the command prompt and to turn off the proxy run
+
+> winproxy off
+
+from the command prompt. You may want to display the current proxy settings by
+
+> winproxy view
+
+If you do have man proxy exceptions (overrides), you can limit the number of
+proxy exceptions displayed with the -n option:
+
+> winproxy view -n 5    # Display only the first 5 exceptions
+
+> winproxy view -n 0    # Don't display proxy exceptions at all
+
 The Python API
 ==============
 
