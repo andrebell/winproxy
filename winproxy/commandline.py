@@ -20,6 +20,14 @@ def cmd_add(args):
 
 # In[ ]:
 
+def cmd_cpl(args):
+    """Open the windows internet settings dialog"""
+    import subprocess
+    subprocess.Popen(['control', 'inetcpl.cpl'])
+
+
+# In[ ]:
+
 def cmd_del(args):
     """Remove a particular proxy setting from the database"""
     print('Removing from database is not yet implemented')
@@ -73,7 +81,7 @@ def cmd_view(args):
 def winproxy():
     """The command line function"""
     # Create a parser
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog='winproxy')
     
     # The command will accept subparsers
     cmd_parsers = parser.add_subparsers(dest='command', help='Get help on command')
@@ -81,6 +89,9 @@ def winproxy():
     # The following commands are available through their subparsers
     parser_add = cmd_parsers.add_parser('add', help=cmd_add.__doc__)
     parser_add.set_defaults(func=cmd_add)
+    
+    parser_cpl = cmd_parsers.add_parser('cpl', help=cmd_cpl.__doc__)
+    parser_cpl.set_defaults(func=cmd_cpl)
     
     parser_del = cmd_parsers.add_parser('del', help=cmd_del.__doc__)
     parser_del.set_defaults(func=cmd_del)
@@ -102,5 +113,12 @@ def winproxy():
     parser_view.set_defaults(func=cmd_view)
     
     args = parser.parse_args()
-    args.func(args)
+    try:
+        # Python 3 does not display usage if command is ommitted
+        # Hence, we force it...
+        if not args.command:
+            raise AttributeError
+        args.func(args)
+    except AttributeError:
+        parser.print_usage()
 
