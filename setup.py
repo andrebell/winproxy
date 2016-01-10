@@ -14,7 +14,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='winproxy',
 
-    version='0.1.0a1',
+    version='0.2.0.dev1',
 
     description='A Proxy Selection Tool for Windows',
     long_description=long_description,
@@ -68,7 +68,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=[],
+    install_requires=['six'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
