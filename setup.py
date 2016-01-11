@@ -22,7 +22,7 @@ setup(
     # The project's main homepage. (Temporarily github)
     url='https://github.com/andrebell/winproxy',
 
-    author='See AUTHORS file',
+    author='Andre Alexander Bell',
     author_email='winproxy@andre-bell.de',
 
     license='BSD',

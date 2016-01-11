@@ -58,4 +58,7 @@ Change Log
   * turn the proxy on
   * turn the proxy off
   * display the current proxy settings
- 
+
+Authors
+-------
+Andre Alexander Bell <winproxy@andre-bell.de>
