@@ -14,7 +14,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='winproxy',
 
-    version='0.2.0a1',
+    version='0.3.0.dev1',
 
     description='A Proxy Selection Tool for Windows',
     long_description=long_description,
