@@ -3,21 +3,6 @@
 
 # In[ ]:
 
-#import sys
-#
-## Platform check
-#assert sys.platform=='win32', 'Module winproxy only available on Windows platform'
-#
-## Python version specific import of winreg module
-#major = sys.version_info.major
-#minor = sys.version_info.minor
-#
-#if (major, minor) == (2, 7):
-#    import _winreg as winreg
-#elif major == 3 and minor >= 4:
-#    import winreg
-#else:
-#    raise Exception('Can\'t import winreg module')
 import six
 from six.moves import winreg
 
@@ -140,6 +125,33 @@ class ProxySetting(object):
             self._http11 = (1, 4)
         else:
             self._http11 = (0, 4)
+    
+    @property
+    def server(self):
+        """Return the proxy server or proxy servers.
+        
+        If individual proxy servers are set, then return a dictionary
+        mapping protocol to proxy:port, e.g.:
+        
+        dict(http='192.168.0.1:8000',
+             https='192.168.0.1:8001')
+        
+        If only one proxy is used for all protocols, then return a
+        dictionary of the form:
+        
+        dict(all='192.168.0.1:8000')
+        
+        If the proxy is disabled the property is None."""
+        if not self.enable:
+            return None
+        # If protocol specific proxy settings are user, these are
+        # assigned to the protocol names with the '=' sign
+        if self._server[0].find('=') >= 0:
+            servers = self._server[0].split(';')
+            servers = dict(map(lambda p: p.split('='), servers))
+        else:
+            servers = dict(all=self._server[0])
+        return servers
     
     @property
     def override(self):
