@@ -128,22 +128,20 @@ class ProxySetting(object):
     
     @property
     def server(self):
-        """Return the proxy server or proxy servers.
+        """Return the proxy server(s).
         
-        If individual proxy servers are set, then return a dictionary
-        mapping protocol to proxy:port, e.g.:
+        If individual proxy servers are set, then a dictionary
+        mapping protocol to proxy:port is returned, e.g.:
         
         dict(http='192.168.0.1:8000',
              https='192.168.0.1:8001')
         
-        If only one proxy is used for all protocols, then return a
+        If only one proxy is used for all protocols, then a
         dictionary of the form:
         
         dict(all='192.168.0.1:8000')
         
-        If the proxy is disabled the property is None."""
-        if not self.enable:
-            return None
+        is returned."""
         # If protocol specific proxy settings are user, these are
         # assigned to the protocol names with the '=' sign
         if self._server[0].find('=') >= 0:
@@ -152,6 +150,61 @@ class ProxySetting(object):
         else:
             servers = dict(all=self._server[0])
         return servers
+    
+    @server.setter
+    def server(self, proxies):
+        """Set the proxy servers
+        
+        If proxies is a string, it will be assigned as the proxy server
+        setting directly, e.g.
+        
+        >>> p = ProxySetting()
+        >>> p.server = '192.168.0.1:8000'
+        >>> p.server
+        {'all': '192.168.0.1:8000'}
+        >>> p.server = 'http=192.168.0.1:8000;https=192.168.0.1:8001;ftp=192.168.0.1:8002;socks=192.168.0.1:8004'
+        >>> p.server
+        {'ftp': '192.168.0.1:8002',
+         'http': '192.168.0.1:8000',
+         'https': '192.168.0.1:8001',
+         'socks': '192.168.0.1:8004'}
+        
+        If the proxies parameter is a dictionary, the individual entries will be used.
+        Allowed keys are 'http', 'https', 'ftp', and 'socks' - or - 'all'. 
+        If a key 'all' is provided, it will take precedence. Example:
+        
+        >>> p.server = dict(all='192.168.0.1:8000')
+        >>> p.server
+        {'all': '192.168.0.1:8000'}
+        """
+        if isinstance(proxies, six.string_types):
+            # TODO: Check if string is valid
+            self._server = (proxies, 1)
+        elif isinstance(proxies, dict):
+            # Check for 'all' first
+            if 'all' in proxies:
+                # TODO: Check value
+                self._server = (proxies['all'], 1)
+            else:
+                # TODO: Check validity of dict
+                http = proxies.get('http', None)
+                https = proxies.get('https', None)
+                ftp = proxies.get('ftp', None)
+                socks = proxies.get('socks', None)
+                proxy_list = []
+                if http:
+                    proxy_list.append('http={0}'.format(http))
+                if https:
+                    proxy_list.append('https={0}'.format(https))
+                if ftp:
+                    proxy_list.append('ftp={0}'.format(ftp))
+                if socks:
+                    proxy_list.append('socks={0}'.format(socks))
+                # This one even works with the empty list
+                self._server = (';'.join(proxy_list), 1)
+        else:
+            # TODO: Provide Exception-classes
+            raise Exception('Wrong proxy type')
     
     @property
     def override(self):
