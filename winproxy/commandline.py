@@ -64,7 +64,14 @@ def cmd_on(args):
 
 def cmd_set(args):
     """Change the current proxy settings"""
-    print('Changing the current settings is not yet implemented')
+    print(args)
+    p = ProxySetting()
+    p.enable = args.enable
+    p.http11 = args.http11
+    p.server = args.proxy
+    p.override = args.override
+    p.registry_write()
+    p.display()
 
 
 # In[ ]:
@@ -106,6 +113,14 @@ def winproxy():
     parser_on.set_defaults(func=cmd_on)
     
     parser_set = cmd_parsers.add_parser('set', help=cmd_set.__doc__)
+    parser_set.add_argument('--disable', '-d', dest='enable', action='store_false')
+    parser_set.add_argument('--no-http11', '-n', dest='http11', action='store_false')
+    parser_set.add_argument('--override', '-o', default=[], nargs='*')
+    parser_set.add_argument('--http', default='')
+    parser_set.add_argument('--https', default='')
+    parser_set.add_argument('--ftp', default='')
+    parser_set.add_argument('--socks', default='')
+    parser_set.add_argument('proxy', default='', nargs='?')
     parser_set.set_defaults(func=cmd_set)
 
     parser_view = cmd_parsers.add_parser('view', help=cmd_view.__doc__)
