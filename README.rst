@@ -46,7 +46,7 @@ Change Log
 0.3.0a1
 ~~~~~~~
 
-* 
+* Added a first draft of the set command
 
 0.2.0a1
 ~~~~~~~

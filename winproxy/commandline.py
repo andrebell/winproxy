@@ -65,11 +65,24 @@ def cmd_on(args):
 def cmd_set(args):
     """Change the current proxy settings"""
     print(args)
-    p = ProxySetting()
-    p.enable = args.enable
-    p.http11 = args.http11
-    p.server = args.proxy
-    p.override = args.override
+    server = {}
+    if args.proxy:
+        server['all'] = args.proxy
+    else:
+        if args.http:
+            server['http'] = args.http
+        if args.https:
+            server['https'] = args.https
+        if args.ftp:
+            server['ftp'] = args.ftp
+        if args.socks:
+            server['socks'] = args.socks
+    if server:
+        p = ProxySetting()
+        p.enable = args.enable
+        p.http11 = args.http11
+        p.server = server
+        p.override = args.override
     p.registry_write()
     p.display()
 
@@ -116,11 +129,11 @@ def winproxy():
     parser_set.add_argument('--disable', '-d', dest='enable', action='store_false')
     parser_set.add_argument('--no-http11', '-n', dest='http11', action='store_false')
     parser_set.add_argument('--override', '-o', default=[], nargs='*')
-    parser_set.add_argument('--http', default='')
-    parser_set.add_argument('--https', default='')
-    parser_set.add_argument('--ftp', default='')
-    parser_set.add_argument('--socks', default='')
-    parser_set.add_argument('proxy', default='', nargs='?')
+    parser_set.add_argument('--all', dest='proxy', default='')
+    parser_set.add_argument('--http', dest='http', default='')
+    parser_set.add_argument('--https', dest='https', default='')
+    parser_set.add_argument('--ftp', dest='ftp', default='')
+    parser_set.add_argument('--socks', dest='socks', default='')
     parser_set.set_defaults(func=cmd_set)
 
     parser_view = cmd_parsers.add_parser('view', help=cmd_view.__doc__)
