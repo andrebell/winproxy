@@ -76,7 +76,7 @@ class ProxySetting(object):
             for exc in displayed_overrides:
                 print("- {0}".format(exc))
             
-            if limited:
+            if limited and (len(self.override)-max_overrides > 0):
                 print("- ... ({0} more)".format(len(self.override)-max_overrides))
     
     def registry_read(self):
@@ -209,7 +209,7 @@ class ProxySetting(object):
     @property
     def override(self):
         """Return a list of all proxy exceptions"""
-        return self._override[0].split(';')
+        return [e for e in self._override[0].split(';') if e != '']
     
     @override.setter
     def override(self, overridelist):

@@ -47,6 +47,9 @@ Change Log
 ~~~~~~~
 
 * Added a first draft of the set command
+* The winproxy view command was broken if
+  * no overrides were set at all
+  * less overrides were set, than should be shown at most
 
 0.2.0a1
 ~~~~~~~
