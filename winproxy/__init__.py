@@ -44,10 +44,7 @@ class ProxySetting(object):
     def __init__(self):
         # Internal state (default empty, disabled setting) 
         self._name = None
-        self._enable = (0, 4)
-        self._http11 = (1, 4)
-        self._server = ('', 1)
-        self._override = ('', 1)
+        self._set_defaults()
     
     def __repr__(self):
         if not self.enable:
@@ -55,6 +52,12 @@ class ProxySetting(object):
         else:
             return u"<Proxy '{0}'>".format(self._server[0])
     
+    def _set_defaults(self):
+        self._enable = (0, 4)
+        self._http11 = (1, 4)
+        self._server = ('', 1)
+        self._override = ('', 1)
+        
     def display(self, max_overrides=5):
         print("ProxyEnable: {0}".format(self.enable))
         print("ProxyHttp11: {0}".format(self.http11))
@@ -82,10 +85,24 @@ class ProxySetting(object):
     def registry_read(self):
         """Read values from registry"""
         proxykey = winreg.OpenKey(_ROOT, _BASEKEY, 0, _ACCESS)
-        self._enable = winreg.QueryValueEx(proxykey, _PROXYENABLE)
-        self._http11 = winreg.QueryValueEx(proxykey, _PROXYHTTP11)
-        self._server = winreg.QueryValueEx(proxykey, _PROXYSERVER)
-        self._override = winreg.QueryValueEx(proxykey, _PROXYOVERRIDE)
+        self._set_defaults()
+        # If any value is not available in the registry, we fall back to the defaults
+        try:
+            self._enable = winreg.QueryValueEx(proxykey, _PROXYENABLE)
+        except FileNotFoundError:
+            pass
+        try:
+            self._http11 = winreg.QueryValueEx(proxykey, _PROXYHTTP11)
+        except FileNotFoundError:
+            pass
+        try:
+            self._server = winreg.QueryValueEx(proxykey, _PROXYSERVER)
+        except FileNotFoundError:
+            pass
+        try:
+            self._override = winreg.QueryValueEx(proxykey, _PROXYOVERRIDE)
+        except FileNotFoundError:
+            pass
         winreg.CloseKey(proxykey)
     
     def registry_write(self):
