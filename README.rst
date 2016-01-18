@@ -54,6 +54,7 @@ Change Log
   separated ones. This may even be mixed. Also, there may be whitespace in the
   Text. This all is now corrected for, i.e., setting override through the
   ProxySettings API will always normalize the string to ';' delimited proxies.
+* Missing registry values fall back to sensible defaults
 
 0.2.0a1
 ~~~~~~~

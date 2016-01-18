@@ -1,10 +1,30 @@
 
 # coding: utf-8
 
+# # Python 2.7 compatibility
+# 
+# To achieve Python 2.7 compatibility we will import the "\_winreg" module
+# from six.moves, since it has been renamed to winreg in Python 3.
+
 # In[ ]:
 
-import re
+import re, six
 from six.moves import winreg
+
+
+# The relevant keys in the registry may not exist at all. This will through a
+# WindowsError on Python 2.7 and a FileNotFoundError on Python 3. Hence, for
+# Python 2.7 we introduce the Python 3 exception name FileNotFoundError.
+
+# In[ ]:
+
+if six.PY2:
+    FileNotFoundError = WindowsError
+
+
+# All Proxy relevant keys are hold by a set of constants.
+
+# In[ ]:
 
 # Registry constants
 _ROOT = winreg.HKEY_CURRENT_USER
