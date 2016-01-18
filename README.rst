@@ -50,6 +50,10 @@ Change Log
 * The winproxy view command was broken if
   * no overrides were set at all
   * less overrides were set, than should be shown at most
+* The override list may contain not only ';' separated proxies, but also ','
+  separated ones. This may even be mixed. Also, there may be whitespace in the
+  Text. This all is now corrected for, i.e., setting override through the
+  ProxySettings API will always normalize the string to ';' delimited proxies.
 
 0.2.0a1
 ~~~~~~~

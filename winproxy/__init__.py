@@ -3,7 +3,7 @@
 
 # In[ ]:
 
-import six
+import re
 from six.moves import winreg
 
 # Registry constants
@@ -209,10 +209,11 @@ class ProxySetting(object):
     @property
     def override(self):
         """Return a list of all proxy exceptions"""
-        return [e for e in self._override[0].split(';') if e != '']
+        return [e.strip() for e in re.split(';|,', self._override[0]) if e.strip() != '']
     
     @override.setter
     def override(self, overridelist):
         """Set the override value from a list of proxy exceptions"""
+        # TODO: Add some check on validity of input
         self._override = (';'.join(overridelist), self._override[1])
 
