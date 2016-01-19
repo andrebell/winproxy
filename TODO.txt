@@ -7,3 +7,8 @@ TODO:
   - edit
 - Add Unittests
 - Add Documentation
+- Switch from argarse to click
+- Rewrite the command line tools to be more flexible
+  - Set and read only single values
+  - Read input from file
+  - Export to files
