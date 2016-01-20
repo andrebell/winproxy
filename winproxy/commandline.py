@@ -64,8 +64,10 @@ def cmd_on(args):
 
 def cmd_set(args):
     """Change the current proxy settings"""
-    print(args)
+    enable = args.enable
+    http11 = args.http11
     server = {}
+    override = args.override
     if args.proxy:
         server['all'] = args.proxy
     else:
@@ -77,13 +79,23 @@ def cmd_set(args):
             server['ftp'] = args.ftp
         if args.socks:
             server['socks'] = args.socks
+    p = ProxySetting()
+    p.registry_read()
+    changed = False
+    if enable:
+        p.enable = enable
+        changed = True
+    if http11:
+        p.http11 = http11
+        changed = True
     if server:
-        p = ProxySetting()
-        p.enable = args.enable
-        p.http11 = args.http11
         p.server = server
-        p.override = args.override
-    p.registry_write()
+        changed = True
+    if override:
+        p.override = override
+        changed = True
+    if changed:
+        p.registry_write()
     p.display()
 
 
@@ -94,6 +106,20 @@ def cmd_view(args):
     p = ProxySetting()
     p.registry_read()
     p.display(args.max_overrides)
+
+
+# In[ ]:
+
+def _to_bool(value):
+    try:
+        i = int(value)
+        return i == 1
+    except:
+        if value in ['True', 'true', 'yes']:
+            return True
+        if value in ['False', 'false', 'no']:
+            return False
+        raise Exception('Can\'t convert {0} to a boolean value'.format(value))
 
 
 # In[ ]:
@@ -126,8 +152,8 @@ def winproxy():
     parser_on.set_defaults(func=cmd_on)
     
     parser_set = cmd_parsers.add_parser('set', help=cmd_set.__doc__)
-    parser_set.add_argument('--disable', '-d', dest='enable', action='store_false')
-    parser_set.add_argument('--no-http11', '-n', dest='http11', action='store_false')
+    parser_set.add_argument('--enable', '-e', type=_to_bool)
+    parser_set.add_argument('--http11', type=_to_bool)
     parser_set.add_argument('--override', '-o', default=[], nargs='*')
     parser_set.add_argument('--all', dest='proxy', default='')
     parser_set.add_argument('--http', dest='http', default='')

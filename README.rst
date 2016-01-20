@@ -46,7 +46,10 @@ Change Log
 0.4.0a1
 ~~~~~~~
 
-*
+* Changed winproxy set command line behaviour to only write those values to the
+  registry, that have been provided as parameter and leave all others as is.
+  This is way more flexible to use.
+* 
 
 0.3.0a1
 ~~~~~~~
