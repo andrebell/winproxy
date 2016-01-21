@@ -16,15 +16,27 @@ The Command Line Tool
 
 [TODO: Description]
 
-To turn on the proxy call
+The proxy settings in Windows are basically given by four values:
+
+  - ProxyEnable
+  - ProxyHttp11
+  - ProxyServer
+  - ProxyOverride
+
+The value of ProxyEnable controls the use of the following proxy settings.
+Therefore, to turn the proxy on or off, one just has to change this single value.
+Since this is so common, the command line utility provides two convinience calls
+to turn the proxy on and off.
+
+To turn the proxy on you have to call
 
   > winproxy on
 
-from the command prompt and to turn off the proxy run
+from the command prompt and to turn the proxy off you have to run
 
   > winproxy off
 
-from the command prompt. You may want to display the current proxy settings by
+respectively. You may want to display the current proxy settings by
 
   > winproxy view
 
