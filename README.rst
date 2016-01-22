@@ -14,8 +14,6 @@ this project as well.
 The Command Line Tool
 ---------------------
 
-[TODO: Description]
-
 The proxy settings in Windows are basically given by four values:
 
   - ProxyEnable
@@ -23,10 +21,21 @@ The proxy settings in Windows are basically given by four values:
   - ProxyServer
   - ProxyOverride
 
-The value of ProxyEnable controls the use of the following proxy settings.
-Therefore, to turn the proxy on or off, one just has to change this single value.
-Since this is so common, the command line utility provides two convinience calls
-to turn the proxy on and off.
+If ProxyEnable is set to 0 no proxy will be used and if it is set to 1 the proxy
+settings specified by the other values are in use.
+
+Every value can be set individually or in combination with the "winproxy set"
+command. E.g., to set the server value specifically for http you can call
+
+  > winproxy set --http proxyserver:port
+
+Setting a proxy server for all protocols to 10.0.0.1 on port 8080 except for the
+local network and enable the proxy is achieved by
+
+  > winproxy set -e 1 --all 10.0.0.1:8080 -o 10.*.*.*
+
+Since turning the proxy on and off is quite common, the command line utility 
+provides two convinience calls to turn the proxy on and off.
 
 To turn the proxy on you have to call
 
@@ -47,6 +56,9 @@ proxy exceptions displayed with the -n option:
 
   > winproxy view -n 0    # Don't display proxy exceptions at all
 
+The full documentation of the command line interface will be given in the
+documentation [TODO: Add Doc and link]
+
 The Python API
 --------------
 
@@ -61,7 +73,7 @@ Change Log
 * Changed winproxy set command line behaviour to only write those values to the
   registry, that have been provided as parameter and leave all others as is.
   This is way more flexible to use.
-* 
+* Added some short, tutorial-like documentation for the command line.
 
 0.3.0a1
 ~~~~~~~
