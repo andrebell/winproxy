@@ -59,46 +59,34 @@ settings specified by the other values are in use.</p>
 <p>Every value can be set individually or in combination with the "winproxy set"
 command. E.g., to set the server value specifically for http you can call</p>
 
-<blockquote>
-<p>winproxy set --http proxyserver:port</p>
-</blockquote>
+<div class="highlight highlight-source-shell"><pre>C:<span class="pl-cce">\&gt;</span> winproxy <span class="pl-c1">set</span> --http proxyserver:port</pre></div>
 
 <p>Setting a proxy server for all protocols to 10.0.0.1 on port 8080 except for the
 local network and enable the proxy is achieved by</p>
 
-<blockquote>
-<p>winproxy set -e 1 --all 10.0.0.1:8080 -o 10.<em>.</em>.*</p>
-</blockquote>
+<div class="highlight highlight-source-shell"><pre>C:<span class="pl-cce">\&gt;</span> winproxy <span class="pl-c1">set</span> -e 1 --all 10.0.0.1:8080 -o 10.<span class="pl-k">*</span>.<span class="pl-k">*</span>.<span class="pl-k">*</span></pre></div>
 
 <p>Since turning the proxy on and off is quite common, the command line utility 
 provides two convinience calls to turn the proxy on and off.</p>
 
 <p>To turn the proxy on you have to call</p>
 
-<blockquote>
-<p>winproxy on</p>
-</blockquote>
+<div class="highlight highlight-source-shell"><pre>C:<span class="pl-cce">\&gt;</span> winproxy on</pre></div>
 
 <p>from the command prompt and to turn the proxy off you have to run</p>
 
-<blockquote>
-<p>winproxy off</p>
-</blockquote>
+<div class="highlight highlight-source-shell"><pre>C:<span class="pl-cce">\&gt;</span> winproxy off</pre></div>
 
 <p>respectively. You may want to display the current proxy settings by</p>
 
-<blockquote>
-<p>winproxy view</p>
-</blockquote>
+<div class="highlight highlight-source-shell"><pre>C:<span class="pl-cce">\&gt;</span> winproxy view</pre></div>
 
 <p>If you do have man proxy exceptions (overrides), you can limit the number of
 proxy exceptions displayed with the -n option:</p>
 
-<blockquote>
-<p>winproxy view -n 5    # Display only the first 5 exceptions</p>
+<div class="highlight highlight-source-shell"><pre>C:<span class="pl-cce">\&gt;</span> winproxy view -n 5    <span class="pl-c"># Display only the first 5 exceptions</span></pre></div>
 
-<p>winproxy view -n 0    # Don't display proxy exceptions at all</p>
-</blockquote>
+<div class="highlight highlight-source-shell"><pre>C:<span class="pl-cce">\&gt;</span> winproxy view -n 0    <span class="pl-c"># Don't display proxy exceptions at all</span></pre></div>
 
 <p>The full documentation of the command line interface will be given in the
 documentation [TODO: Add Doc and link]</p>
