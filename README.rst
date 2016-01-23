@@ -62,7 +62,50 @@ documentation [TODO: Add Doc and link]
 The Python API
 --------------
 
-[TODO: API Description]
+The python API for accessing and changing the proxy settings in windows is
+build around a class called ProxySetting. By default, every new object of this
+class is initialized with empty default values.
+
+  >>> from winproxy import ProxySetting
+  >>> p = ProxySetting()
+  >>> p.display()
+  ProxyEnable: False
+  ProxyHttp11: True
+  ProxyServer: 
+  ProxyOverride:
+
+To load the current proxy settings from the registry you can use the method
+registry_read().
+
+  >>> p.registry_read()
+  >>> p.display()
+  ProxyEnable: True
+  ProxyHttp11: True
+  ProxyServer: 10.0.0.1:8080
+  ProxyOverride: 
+  - <local>
+
+You may change the settings using the properties enable, http11, server, and
+override, which can directly be set with a bool, bool, string or dictionary, 
+and a list respectively.
+
+To give an example, setting the proxy server to new settings for http and
+https, one could write
+
+  >>> p.server = dict(http='10.0.0.1:8080', https='10.0.0.1:8081')
+  >>> p.display()
+  ProxyEnable: True
+  ProxyHttp11: True
+  ProxyServer: http=10.0.0.1:8080;https=10.0.0.1:8081
+  ProxyOverride:
+  - <local>
+
+Writing the settings to the registry is achieved with the method registry_write.
+
+  >>> p.registry_write()
+
+The full documentation of the command line interface will be given in the
+documentation [TODO: Add Doc and link]
 
 Change Log
 ----------
