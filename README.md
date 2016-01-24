@@ -134,6 +134,7 @@ documentation [TODO: Add Doc and link]
   registry, that have been provided as parameter and leave all others as is.
   This is way more flexible to use.
 * Added some short, tutorial-like documentation for the command line.
+* Added some short, tutorial-like documentation for the python API.
 
 ### 0.3.0a1
 
