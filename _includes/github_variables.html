@@ -1,0 +1,8 @@
+{% assign github_project_title = 'project title' %}
+{% if site.github.project_title %}{% assign github_project_title = site.github.project_title %}{% endif %}
+{% assign github_project_tagline = 'Project tagline' %}
+{% if site.github.project_tagline %}{% assign github_project_tagline = site.github.project_tagline %}{% endif %}
+{% assign github_repository_url = 'https://repository_url' %}
+{% if github.repository_url %}{% assign github_repository_url = site.github.repository_url %}{% endif %}
+{% assign github_owner_url = 'https://owner_url' %}
+{% if github.owner_url %}{% assign github_owner_url = site.github.owner_url %}{% endif %}

@@ -1,5 +1,4 @@
 ---
-layout: default
 ---
 
 # A Proxy Selection Tool for Windows
