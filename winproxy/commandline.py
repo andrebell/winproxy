@@ -3,11 +3,10 @@
 
 # # The command line tool
 # 
-# The winproxy command line tool parses the parameter using the argparse module.
+# The winproxy command line tool uses [click](https://pypi.python.org/pypi/click) to parse options, arguments and the subcommand structure.
 
 # In[ ]:
 
-#import argparse
 import click
 from . import ProxySetting
 
@@ -91,14 +90,16 @@ def winproxy():
 
 # In[ ]:
 
-def cmd_add(args):
+@winproxy.command(name='add')
+def _add():
     """The add command adds the current proxy settings to the database"""
-    print('Adding to database is not yet implemented')
+    click.echo('Adding to database is not yet implemented')
 
 
 # In[ ]:
 
-def cmd_cpl(args):
+@winproxy.command(name='cpl')
+def _cpl():
     """Open the windows internet settings dialog"""
     import subprocess
     subprocess.Popen(['control', 'inetcpl.cpl'])
@@ -106,22 +107,24 @@ def cmd_cpl(args):
 
 # In[ ]:
 
-def cmd_del(args):
+@winproxy.command(name='del')
+def _del():
     """Remove a particular proxy setting from the database"""
-    print('Removing from database is not yet implemented')
+    click.echo('Removing from database is not yet implemented')
 
 
 # In[ ]:
 
-def cmd_edit(args):
+@winproxy.command(name='edit')
+def _edit():
     """Open the Windows proxy settings dialog"""
-    print('Opening the windows proxy settings dialog is not yet implemented')
+    click.echo('Opening the windows proxy settings dialog is not yet implemented')
 
 
 # In[ ]:
 
 @winproxy.command(name='off')
-def cmd_off(args):
+def _off():
     """Disable the proxy"""
     p = ProxySetting()
     p.registry_read()
@@ -132,7 +135,7 @@ def cmd_off(args):
 # In[ ]:
 
 @winproxy.command(name='on')
-def cmd_on(args):
+def _on():
     """Enable the proxy"""
     p = ProxySetting()
     p.registry_read()
@@ -143,15 +146,15 @@ def cmd_on(args):
 # In[ ]:
 
 @winproxy.command(name='set')
-@click.option('--enable', '-e', 'enable') #type=_to_bool)
-@click.option('--http11', 'http11') #type=_to_bool)
-@click.option('--override', '-o', 'override') #default=[], nargs='*')
-@click.option('--all', 'proxy') #, default='')
-@click.option('--http', 'http') #, default='')
-@click.option('--https', 'https') #, default='')
-@click.option('--ftp', 'ftp') #, default='')
-@click.option('--socks', 'socks') #, default='')
-def cmd_set(enable, http11, override, proxy, http, https, ftp, socks):
+@click.option('--enable', '-e') #type=_to_bool)
+@click.option('--http11') #type=_to_bool)
+@click.option('--override', '-o') #default=[], nargs='*')
+@click.option('--all') #, default='')
+@click.option('--http') #, default='')
+@click.option('--https') #, default='')
+@click.option('--ftp') #, default='')
+@click.option('--socks') #, default='')
+def _set(enable, http11, override, all, http, https, ftp, socks):
     """Change the current proxy settings"""
     enable = args.enable
     http11 = args.http11
@@ -192,7 +195,7 @@ def cmd_set(enable, http11, override, proxy, http, https, ftp, socks):
 
 @winproxy.command(name='view')
 @click.option('--max-overrides', '-n', 'max_overrides', help='Limit the number of displayed proxy overrides') #type=int, default=None, 
-def cmd_view(max_overrides):
+def _view(max_overrides):
     """The view command displays the current proxy settings"""
     p = ProxySetting()
     p.registry_read()
