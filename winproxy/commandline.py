@@ -13,23 +13,10 @@ from . import ProxySetting
 
 # In[ ]:
 
-def _to_bool(value):
-    try:
-        i = int(value)
-        return i == 1
-    except:
-        if value in ['True', 'true', 'yes']:
-            return True
-        if value in ['False', 'false', 'no']:
-            return False
-        raise Exception('Can\'t convert {0} to a boolean value'.format(value))
-
-
-# In[ ]:
-
 # Requires getting parameters from subcommands....
 # Well... To be done...
 @click.group()
+@click.version_option(prog_name='winproxy')
 def winproxy():
     """The command line function"""
     pass
@@ -101,6 +88,7 @@ def _add():
 @winproxy.command(name='cpl')
 def _cpl():
     """Open the windows internet settings dialog"""
+    #click.launch('control inetcpl.cpl')
     import subprocess
     subprocess.Popen(['control', 'inetcpl.cpl'])
 
@@ -145,50 +133,67 @@ def _on():
 
 # In[ ]:
 
-@winproxy.command(name='set')
-@click.option('--enable', '-e') #type=_to_bool)
-@click.option('--http11') #type=_to_bool)
-@click.option('--override', '-o') #default=[], nargs='*')
-@click.option('--all') #, default='')
-@click.option('--http') #, default='')
-@click.option('--https') #, default='')
-@click.option('--ftp') #, default='')
-@click.option('--socks') #, default='')
-def _set(enable, http11, override, all, http, https, ftp, socks):
-    """Change the current proxy settings"""
-    enable = args.enable
-    http11 = args.http11
-    server = {}
-    override = args.override
-    if args.proxy:
-        server['all'] = args.proxy
-    else:
-        if args.http:
-            server['http'] = args.http
-        if args.https:
-            server['https'] = args.https
-        if args.ftp:
-            server['ftp'] = args.ftp
-        if args.socks:
-            server['socks'] = args.socks
+@winproxy.command(name='server')
+@click.argument('serversetting', default=None, required=False)
+def _server(serversetting):
+    """Experimental command to read or set the ProxyServer property directly."""
     p = ProxySetting()
     p.registry_read()
+    if serversetting is None:
+        click.echo(p._server[0])
+    else:
+        p._server = (serversetting, p._server[1])
+        p.registry_write()
+
+
+# In[ ]:
+
+@winproxy.command(name='set')
+@click.option('--enable/--disable', '-e/-d', 'enable', default=None)
+@click.option('--http11/--no-http11', '-h/-nh', 'http11', default=None)
+@click.option('--override', '-o', default=None) #, nargs='*')
+@click.option('--all', 'proxy', default=None)
+@click.option('--http', default=None)
+@click.option('--https', default=None)
+@click.option('--ftp', default=None)
+@click.option('--socks', default=None)
+def _set(enable, http11, override, proxy, http, https, ftp, socks):
+    """Change the current proxy settings"""
+    server = None
+    if not proxy is None and not proxy == '':
+        server = dict(all=proxy)
+    else:
+        server = {}
+        if not http is None and not http == '':
+            server['http'] = http
+        if not https is None and not https == '':
+            server['https'] = https
+        if not ftp is None and not ftp == '':
+            server['ftp'] = ftp
+        if not socks is None and not socks == '':
+            server['socks'] = socks
+        if server == {}:
+            server = None
+    click.echo(server)
+    
+    p = ProxySetting()
+    p.registry_read()
+    
     changed = False
-    if enable:
+    if not enable is None:
         p.enable = enable
         changed = True
-    if http11:
+    if not http11 is None:
         p.http11 = http11
         changed = True
-    if server:
+    if not server is None:
         p.server = server
         changed = True
-    if override:
+    if not override is None:
         p.override = override
         changed = True
     if changed:
         p.registry_write()
-    p.display()
 
 
 # In[ ]:
@@ -199,5 +204,27 @@ def _view(max_overrides):
     """The view command displays the current proxy settings"""
     p = ProxySetting()
     p.registry_read()
-    p.display(max_overrides)
+    
+    click.echo("ProxyEnable: {0}".format(p.enable))
+    click.echo("ProxyHttp11: {0}".format(p.http11))
+    click.echo("ProxyServer: {0}".format(p._server[0]))
+    if max_overrides == 0:
+        # Do not display proxy overrides
+        pass
+    else:
+        # Display proxy overrides, possibly limited number
+        click.echo("ProxyOverride:")
+
+        if max_overrides == None or max_overrides == -1:
+            displayed_overrides = p.override
+            limited = False
+        else:
+            displayed_overrides = p.override[:max_overrides]
+            limited = True
+
+        for exc in displayed_overrides:
+            click.echo("- {0}".format(exc))
+
+        if limited and (len(p.override)-max_overrides > 0):
+            click.echo("- ... ({0} more)".format(len(p.override)-max_overrides))
 

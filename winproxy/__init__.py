@@ -78,30 +78,6 @@ class ProxySetting(object):
         self._server = ('', 1)
         self._override = ('', 1)
         
-    def display(self, max_overrides=5):
-        print("ProxyEnable: {0}".format(self.enable))
-        print("ProxyHttp11: {0}".format(self.http11))
-        print("ProxyServer: {0}".format(self._server[0]))
-        if max_overrides == 0:
-            # Do not display proxy overrides
-            pass
-        else:
-            # Display proxy overrides, possibly limited number
-            print("ProxyOverride:")
-
-            if max_overrides == None or max_overrides == -1:
-                displayed_overrides = self.override
-                limited = False
-            else:
-                displayed_overrides = self.override[:max_overrides]
-                limited = True
-            
-            for exc in displayed_overrides:
-                print("- {0}".format(exc))
-            
-            if limited and (len(self.override)-max_overrides > 0):
-                print("- ... ({0} more)".format(len(self.override)-max_overrides))
-    
     def registry_read(self):
         """Read values from registry"""
         proxykey = winreg.OpenKey(_ROOT, _BASEKEY, 0, _ACCESS)
