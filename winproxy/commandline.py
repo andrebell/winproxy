@@ -88,7 +88,7 @@ def _server(serversetting):
 @click.option('--enable/--disable', '-e/-d', 'enable', default=None)
 @click.option('--http11/--no-http11', '-h/-nh', 'http11', default=None)
 @click.option('--override', '-o', default=None) #, nargs='*')
-@click.option('--all', 'proxy', default=None)
+@click.option('--all', '-a', 'proxy', default=None)
 @click.option('--http', default=None)
 @click.option('--https', default=None)
 @click.option('--ftp', default=None)
@@ -163,4 +163,15 @@ def _view(max_overrides):
 
         if limited and (len(p.override)-max_overrides > 0):
             click.echo("- ... ({0} more)".format(len(p.override)-max_overrides))
+
+
+# In[ ]:
+
+@winproxy.command(name='new')
+@click.argument('optarg', default=None, required=False)
+def _new(optarg):
+    if optarg is None:
+        click.echo('None')
+    else:
+        click.echo(optarg)
 
