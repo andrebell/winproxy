@@ -34,6 +34,12 @@ _PROXYENABLE = 'ProxyEnable'
 _PROXYHTTP11 = 'ProxyHttp1.1'
 _PROXYSERVER = 'ProxyServer'
 _PROXYOVERRIDE = 'ProxyOverride'
+_SUBKEYS = [
+    _PROXYENABLE,
+    _PROXYHTTP11,
+    _PROXYSERVER,
+    _PROXYOVERRIDE,
+]
 
 
 # # Proxy setting class
@@ -72,72 +78,75 @@ class ProxySetting(object):
         else:
             return u"<Proxy '{0}'>".format(self._server[0])
     
+    def __getitem__(self, key):
+        return self._registry[key][0]
+    
+    def __setitem__(self, key, value):
+        v, t = self._registry[key]
+        if key in [_PROXYENABLE, _PROXYHTTP11]:
+            if not isinstance(value, int) or value not in [0, 1]:
+                raise Exception('Wrong type or value')
+            self._registry[key] = (value, t)
+        elif key in [_PROXYSERVER, _PROXYOVERRIDE]:
+            if not isinstance(value, six.string_types):
+                raise Exception('Wrong type or value')
+            self._registry[key] = (value, t)
+        else:
+            raise Exception('Could not set value')
+    
     def _set_defaults(self):
-        self._enable = (0, 4)
-        self._http11 = (1, 4)
-        self._server = ('', 1)
-        self._override = ('', 1)
+        self._registry = {
+            _PROXYENABLE: (0, 4),
+            _PROXYHTTP11: (1, 4),
+            _PROXYSERVER: ('', 1),
+            _PROXYOVERRIDE: ('', 1)
+        }
         
     def registry_read(self):
         """Read values from registry"""
         proxykey = winreg.OpenKey(_ROOT, _BASEKEY, 0, _ACCESS)
         self._set_defaults()
         # If any value is not available in the registry, we fall back to the defaults
-        try:
-            self._enable = winreg.QueryValueEx(proxykey, _PROXYENABLE)
-        except FileNotFoundError:
-            pass
-        try:
-            self._http11 = winreg.QueryValueEx(proxykey, _PROXYHTTP11)
-        except FileNotFoundError:
-            pass
-        try:
-            self._server = winreg.QueryValueEx(proxykey, _PROXYSERVER)
-        except FileNotFoundError:
-            pass
-        try:
-            self._override = winreg.QueryValueEx(proxykey, _PROXYOVERRIDE)
-        except FileNotFoundError:
-            pass
+        for subkey in _SUBKEYS:
+            try:
+                # This will return (value, type) tuples, that are stored for each subkey
+                self._registry[subkey] = winreg.QueryValueEx(proxykey, subkey)
+            except FileNotFoundError:
+                pass
         winreg.CloseKey(proxykey)
     
     def registry_write(self):
         """Write values to registry"""
         proxykey = winreg.OpenKey(_ROOT, _BASEKEY, 0, _ACCESS)
-        value, regtype = self._enable
-        winreg.SetValueEx(proxykey, _PROXYENABLE, 0, regtype, value)
-        value, regtype = self._http11
-        winreg.SetValueEx(proxykey, _PROXYHTTP11, 0, regtype, value)
-        value, regtype = self._server
-        winreg.SetValueEx(proxykey, _PROXYSERVER, 0, regtype, value)
-        value, regtype = self._override
-        winreg.SetValueEx(proxykey, _PROXYOVERRIDE, 0, regtype, value)
+        for subkey in _SUBKEYS:
+            value, regtype = self._registry[subkey]
+            winreg.SetValueEx(proxykey, subkey, 0, regtype, value)
         winreg.CloseKey(proxykey)
 
     @property
     def enable(self):
         """Proxy enable status"""
-        return self._enable[0] == 1
+        return self[_PROXYENABLE] == 1
     
     @enable.setter
     def enable(self, on):
         """Set enable value from a boolean value"""
         if on:
-            self._enable = (1, 4)
+            self[_PROXYENABLE] = 1
         else:
-            self._enable = (0, 4)
+            self[_PROXYENABLE] = 0
     
     @property
     def http11(self):
         """Proxy http1.1 status"""
-        return self._http11[0] == 1
+        return self[_PROXYHTTP11] == 1
     
     @http11.setter
     def http11(self, on):
         if on:
-            self._http11 = (1, 4)
+            self[_PROXYHTTP11] = 1
         else:
-            self._http11 = (0, 4)
+            self[_PROXYHTTP11] = 0
     
     @property
     def server(self):
@@ -155,13 +164,14 @@ class ProxySetting(object):
         dict(all='192.168.0.1:8000')
         
         is returned."""
-        # If protocol specific proxy settings are user, these are
+        # If protocol specific proxy settings are used, these are
         # assigned to the protocol names with the '=' sign
-        if self._server[0].find('=') >= 0:
-            servers = self._server[0].split(';')
+        proxyserver = self[_PROXYSERVER]
+        if proxyserver.find('=') >= 0:
+            servers = proxyserver.split(';')
             servers = dict(map(lambda p: p.split('='), servers))
         else:
-            servers = dict(all=self._server[0])
+            servers = dict(all=proxyserver)
         return servers
     
     @server.setter
@@ -192,12 +202,12 @@ class ProxySetting(object):
         """
         if isinstance(proxies, six.string_types):
             # TODO: Check if string is valid
-            self._server = (proxies, 1)
+            self[_PROXYSERVER] = proxies
         elif isinstance(proxies, dict):
             # Check for 'all' first
             if 'all' in proxies:
                 # TODO: Check value
-                self._server = (proxies['all'], 1)
+                self[_PROXYSERVER] = proxies['all']
             else:
                 # TODO: Check validity of dict
                 http = proxies.get('http', None)
@@ -214,7 +224,7 @@ class ProxySetting(object):
                 if socks:
                     proxy_list.append('socks={0}'.format(socks))
                 # This one even works with the empty list
-                self._server = (';'.join(proxy_list), 1)
+                self[_PROXYSERVER] = ';'.join(proxy_list)
         else:
             # TODO: Provide Exception-classes
             raise Exception('Wrong proxy type')
@@ -222,11 +232,11 @@ class ProxySetting(object):
     @property
     def override(self):
         """Return a list of all proxy exceptions"""
-        return [e.strip() for e in re.split(';|,', self._override[0]) if e.strip() != '']
+        return [e.strip() for e in re.split(';|,', self[_PROXYOVERRIDE]) if e.strip() != '']
     
     @override.setter
     def override(self, overridelist):
         """Set the override value from a list of proxy exceptions"""
         # TODO: Add some check on validity of input
-        self._override = (';'.join(overridelist), self._override[1])
+        self[_PROXYOVERRIDE] = ';'.join(overridelist)
 
