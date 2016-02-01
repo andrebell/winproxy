@@ -8,7 +8,9 @@
 # In[ ]:
 
 import click
-from . import ProxySetting
+import sys
+
+from . import ProxySetting, _SUBKEYS, _PROXYSERVER
 
 
 # In[ ]:
@@ -69,16 +71,31 @@ def _on():
 
 # In[ ]:
 
-@winproxy.command(name='server')
-@click.argument('serversetting', default=None, required=False)
-def _server(serversetting):
+@winproxy.command(name='reg')
+@click.argument('subkey', default='ProxyServer')
+@click.argument('value', default=None, required=False)
+def _reg(subkey, value):
     """Experimental command to read or set the ProxyServer property directly."""
+    subkey_map = dict(zip(map(lambda s: s.lower(), _SUBKEYS), _SUBKEYS))
+    subkey = subkey_map.get(subkey.lower(), None)
+    if subkey is None:
+        click.echo(
+            click.style(
+                "Error! Invalid registry key specified.",
+                fg='red', bold=True
+            )
+        )
+        sys.exit(1)
+    
     p = ProxySetting()
     p.registry_read()
-    if serversetting is None:
-        click.echo(p._server[0])
+    
+    if value is None:
+        # Display current value
+        value = p[subkey]
+        click.echo("{0}: {1}".format(subkey, value))
     else:
-        p._server = (serversetting, p._server[1])
+        p[subkey] = value
         p.registry_write()
 
 
@@ -135,7 +152,8 @@ def _set(enable, http11, override, proxy, http, https, ftp, socks):
 # In[ ]:
 
 @winproxy.command(name='view')
-@click.option('--max-overrides', '-n', 'max_overrides', help='Limit the number of displayed proxy overrides') #type=int, default=None, 
+@click.option('--max-overrides', '-n', 'max_overrides', type=int, default=None,
+              help='Limit the number of displayed proxy overrides')
 def _view(max_overrides):
     """The view command displays the current proxy settings"""
     p = ProxySetting()
@@ -143,7 +161,8 @@ def _view(max_overrides):
     
     click.echo("ProxyEnable: {0}".format(p.enable))
     click.echo("ProxyHttp11: {0}".format(p.http11))
-    click.echo("ProxyServer: {0}".format(p._server[0]))
+    # Display ProxyServer in raw format
+    click.echo("ProxyServer: {0}".format(p[_PROXYSERVER]))
     if max_overrides == 0:
         # Do not display proxy overrides
         pass
