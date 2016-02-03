@@ -10,7 +10,20 @@
 import click
 import sys
 
-from . import ProxySetting, _SUBKEYS, _PROXYSERVER
+from . import ProxySetting, _SUBKEYS, _PROXYENABLE, _PROXYHTTP11, _PROXYSERVER, _PROXYOVERRIDE
+
+
+# In[ ]:
+
+reg_file_template = """Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings]
+"MigrateProxy"=dword:00000001
+"ProxyEnable"=dword:{ProxyEnable:08}
+"ProxyHttp1.1"=dword:{ProxyHttp11:08}
+"ProxyServer"="{ProxyServer}"
+"ProxyOverride"="{ProxyOverride}"
+"""
 
 
 # In[ ]:
@@ -71,7 +84,29 @@ def _on():
 
 # In[ ]:
 
+def _reg_export(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    
+    p = ProxySetting()
+    p.registry_read()
+    p.override = p.override
+    click.echo(reg_file_template.format(
+            ProxyEnable = p[_PROXYENABLE],
+            ProxyHttp11 = p[_PROXYHTTP11],
+            ProxyServer = p[_PROXYSERVER],
+            ProxyOverride = p[_PROXYOVERRIDE]
+        )
+    )
+    ctx.exit()
+
+
+# In[ ]:
+
+#@click.option('--output-file', '-of', 'outputfile', type=Click.File('w'))
+
 @winproxy.command(name='reg')
+@click.option('--export', '-e', default=False, is_flag=True, callback=_reg_export, expose_value=False, is_eager=True)
 @click.argument('subkey', default='ProxyServer')
 @click.argument('value', default=None, required=False)
 def _reg(subkey, value):
