@@ -9,8 +9,12 @@
 
 import click
 import sys
+import yaml
 
-from . import ProxySetting, _SUBKEYS, _PROXYENABLE, _PROXYHTTP11, _PROXYSERVER, _PROXYOVERRIDE
+
+# In[ ]:
+
+from winproxy import ProxySetting, _SUBKEYS, _PROXYENABLE, _PROXYHTTP11, _PROXYSERVER, _PROXYOVERRIDE
 
 
 # In[ ]:
@@ -30,9 +34,17 @@ reg_file_template = """Windows Registry Editor Version 5.00
 
 @click.group()
 @click.version_option(prog_name='winproxy')
-def winproxy():
+@click.option('--database', '-d', 'identifier', metavar='<identifier>', default=None)
+@click.pass_context
+def winproxy(ctx, identifier):
     """The command line function"""
-    pass
+    if identifier is None:
+        p = ProxySetting()
+        p.registry_read()
+        ctx.obj = p
+    else:
+        p = ProxySetting()
+        ctx.obj = p
 
 
 # @winproxy.command(name='add')
@@ -62,9 +74,56 @@ def _cpl():
 
 # In[ ]:
 
+def _export_yaml(p):
+    p.override = p.override
+    d = {
+        _PROXYENABLE: p.enable,
+        _PROXYHTTP11: p.http11,
+        _PROXYSERVER: p.server,
+        _PROXYOVERRIDE: p.override
+    }
+    return yaml.dump(d, default_flow_style=False)
+
+
+# In[ ]:
+
+def _export_reg(p):
+    return reg_file_template.format(
+        ProxyEnable = p[_PROXYENABLE],
+        ProxyHttp11 = p[_PROXYHTTP11],
+        ProxyServer = p[_PROXYSERVER],
+        ProxyOverride = p[_PROXYOVERRIDE]
+    )
+
+
+# In[ ]:
+
+def _export_plain(p):
+    return unicode(p._registry)
+
+
+# In[ ]:
+
+@winproxy.command(name='export')
+@click.option('--format', '-f', 'format', type=click.Choice(['reg', 'yaml', 'plain']), default='reg')
+@click.pass_obj
+def _export(p, format):
+    try:
+        export_func = globals()['_export_{0}'.format(format)]
+    except:
+        raise Exception('No such export format!')
+    
+    p.override = p.override
+    click.echo(export_func(p))
+
+
+# In[ ]:
+
 @winproxy.command(name='off')
-def _off():
+def _off(p):
     """Disable the proxy"""
+    # Currently not working on the context object, since the write
+    # operation is not bound to the corresponding source!
     p = ProxySetting()
     p.registry_read()
     p.enable = False
@@ -74,8 +133,10 @@ def _off():
 # In[ ]:
 
 @winproxy.command(name='on')
-def _on():
+def _on(p):
     """Enable the proxy"""
+    # Currently not working on the context object, since the write
+    # operation is not bound to the corresponding source!
     p = ProxySetting()
     p.registry_read()
     p.enable = True
@@ -88,17 +149,8 @@ def _reg_export(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
     
-    p = ProxySetting()
-    p.registry_read()
-    p.override = p.override
-    click.echo(reg_file_template.format(
-            ProxyEnable = p[_PROXYENABLE],
-            ProxyHttp11 = p[_PROXYHTTP11],
-            ProxyServer = p[_PROXYSERVER],
-            ProxyOverride = p[_PROXYOVERRIDE]
-        )
-    )
-    ctx.exit()
+    p = ctx.obj
+    click.echo(_export_reg(p))
 
 
 # In[ ]:
@@ -189,11 +241,9 @@ def _set(enable, http11, override, proxy, http, https, ftp, socks):
 @winproxy.command(name='view')
 @click.option('--max-overrides', '-n', 'max_overrides', type=int, default=None,
               help='Limit the number of displayed proxy overrides')
-def _view(max_overrides):
+@click.pass_obj
+def _view(p, max_overrides):
     """The view command displays the current proxy settings"""
-    p = ProxySetting()
-    p.registry_read()
-    
     click.echo("ProxyEnable: {0}".format(p.enable))
     click.echo("ProxyHttp11: {0}".format(p.http11))
     # Display ProxyServer in raw format
@@ -217,15 +267,4 @@ def _view(max_overrides):
 
         if limited and (len(p.override)-max_overrides > 0):
             click.echo("- ... ({0} more)".format(len(p.override)-max_overrides))
-
-
-# In[ ]:
-
-@winproxy.command(name='new')
-@click.argument('optarg', default=None, required=False)
-def _new(optarg):
-    if optarg is None:
-        click.echo('None')
-    else:
-        click.echo(optarg)
 
