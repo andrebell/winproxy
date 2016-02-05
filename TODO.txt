@@ -7,8 +7,6 @@ TODO:
   - edit
 - Add Unittests
 - Add Documentation
-- Switch from argarse to click
 - Rewrite the command line tools to be more flexible
   - Read input from file
-  - Export to files
 - Change layout of project webpage
