@@ -120,7 +120,7 @@ def _export(p, format):
 # In[ ]:
 
 @winproxy.command(name='off')
-def _off(p):
+def _off():
     """Disable the proxy"""
     # Currently not working on the context object, since the write
     # operation is not bound to the corresponding source!
@@ -133,7 +133,7 @@ def _off(p):
 # In[ ]:
 
 @winproxy.command(name='on')
-def _on(p):
+def _on():
     """Enable the proxy"""
     # Currently not working on the context object, since the write
     # operation is not bound to the corresponding source!
