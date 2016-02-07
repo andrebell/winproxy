@@ -114,6 +114,8 @@ class ProxySetting(object):
             except FileNotFoundError:
                 pass
         winreg.CloseKey(proxykey)
+        # Normalize ProxyOverride to semicolon separated list
+        self.override = self.override
     
     def registry_write(self):
         """Write values to registry"""
