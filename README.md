@@ -135,6 +135,9 @@ documentation [TODO: Add Doc and link]
   This is way more flexible to use.
 * Added some short, tutorial-like documentation for the command line.
 * Added some short, tutorial-like documentation for the python API.
+* Added a "reg" command, which offers raw access to the registry sub keys
+* Added an export option, which can export the registry settings into files in
+  yaml, reg or plain format.
 
 ### 0.3.0a1
 
