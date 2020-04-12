@@ -1,7 +1,16 @@
 ---
+layout: article
+title: Winproxy - A Proxy Selection Tool for Windows
+mode: immersive
+header:
+  theme: dark
+article_header:
+  type: overlay
+  theme: dark
+  background_color: '#2b5b84'
+  background_image: false
+key: project_winproxy
 ---
-
-# A Proxy Selection Tool for Windows
 
 From time to time it is necessary to change the systems proxy settings. This
 can be due to network changes or to test software with internet access on
