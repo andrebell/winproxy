@@ -10,6 +10,8 @@ article_header:
   background_color: '#2b5b84'
   background_image: false
 key: project_winproxy
+sidebar:
+  nav: winproxy
 ---
 
 From time to time it is necessary to change the systems proxy settings. This
@@ -168,7 +170,7 @@ documentation [TODO: Add Doc and link]
 ### 0.1.0a1
 
 * Basic ProxySettings class for the Python API
-* Command line with "winproxy on|off|view" to
+* Command line with ```winproxy on|off|view``` to
   * turn the proxy on
   * turn the proxy off
   * display the current proxy settings
